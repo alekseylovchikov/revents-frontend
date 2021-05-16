@@ -7,25 +7,8 @@ import styles from '@/styles/Event.module.css';
 import { API_URL } from '@/config/index';
 import { toast } from 'react-toastify';
 
-export default function EventPage({ evt, token }) {
+export default function EventPage({ evt }) {
   const router = useRouter();
-
-  async function deleteEvent() {
-    if (confirm('Вы уверены?')) {
-      const res = await fetch(`${API_URL}/events/${evt.id}`, {
-        method: 'delete',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        toast.error(data.message);
-      } else {
-        router.push('/events');
-      }
-    }
-  }
 
   if (!evt) router.push('/events');
 
@@ -59,29 +42,17 @@ export default function EventPage({ evt, token }) {
   );
 }
 
-export async function getStaticPaths() {
-  const res = await fetch(`${API_URL}/events`);
-  const events = await res.json();
+// export async function getStaticPaths() {
+//   const res = await fetch(`${API_URL}/events`);
+//   const events = await res.json();
 
-  return {
-    paths: events.map((evt) => ({ params: { slug: evt.slug } })),
-    fallback: false,
-  };
-}
+//   return {
+//     paths: events.map((evt) => ({ params: { slug: evt.slug } })),
+//     fallback: false,
+//   };
+// }
 
-export async function getStaticProps({ params: { slug }, req }) {
-  const res = await fetch(`${API_URL}/events?slug=${slug}`);
-  const events = await res.json();
-
-  return {
-    props: {
-      evt: events.length > 0 ? events[0] : undefined,
-    },
-    revalidate: 1,
-  };
-}
-
-// export async function getServerSideProps({ query: { slug }, req }) {
+// export async function getStaticProps({ params: { slug }, req }) {
 //   const res = await fetch(`${API_URL}/events?slug=${slug}`);
 //   const events = await res.json();
 
@@ -89,5 +60,17 @@ export async function getStaticProps({ params: { slug }, req }) {
 //     props: {
 //       evt: events.length > 0 ? events[0] : undefined,
 //     },
+//     revalidate: 1,
 //   };
 // }
+
+export async function getServerSideProps({ query: { slug } }) {
+  const res = await fetch(`${API_URL}/events?slug=${slug}`);
+  const events = await res.json();
+
+  return {
+    props: {
+      evt: events.length > 0 ? events[0] : undefined,
+    },
+  };
+}
