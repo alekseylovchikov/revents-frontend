@@ -5,7 +5,6 @@ import Layout from '@/components/Layout';
 import EventMap from '@/components/EventMap';
 import styles from '@/styles/Event.module.css';
 import { API_URL } from '@/config/index';
-import { toast } from 'react-toastify';
 
 export default function EventPage({ evt }) {
   const router = useRouter();
